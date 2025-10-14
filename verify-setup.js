@@ -82,8 +82,7 @@ try {
     'electron',
     'typescript',
     'zustand',
-    'drizzle-orm',
-    'better-sqlite3',
+    'sql.js',
     'tailwindcss',
   ];
   

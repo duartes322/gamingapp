@@ -25,13 +25,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Database
-*.db
-*.db-journal
-productivity.db
-
-# Drizzle
-drizzle/
+# Database (now stored in browser localStorage)
+# No .db files anymore!
 
 # Build outputs
 build/

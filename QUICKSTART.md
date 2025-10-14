@@ -2,6 +2,8 @@
 
 Get your Productivity Quest app running in 3 simple steps!
 
+> **🪟 Windows Users**: No Visual Studio needed! This app uses sql.js (SQLite as WebAssembly) so it installs cleanly on any platform.
+
 ## Step 1: Install Dependencies
 
 Open your terminal in the project directory and run:
@@ -66,9 +68,10 @@ The app will:
 3. Check for error messages in the terminal
 
 **To reset the database:**
-1. Close the app
-2. Delete `productivity.db`
-3. Restart the app - it will create fresh data
+1. Open DevTools (Ctrl+Shift+I or Cmd+Option+I)
+2. Go to Application → Local Storage
+3. Delete the `productivityDb` entry
+4. Refresh the app - it will create fresh data
 
 ## Development Tips
 

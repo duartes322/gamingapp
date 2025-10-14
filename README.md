@@ -2,6 +2,8 @@
 
 A gamified productivity app built with Electron, React, TypeScript, and SQLite. Track your tasks, log activities, earn XP, level up, and maintain daily streaks!
 
+> **🪟 Windows-Friendly!** No Visual Studio or C++ build tools required! Works on Windows, Mac, and Linux with just `npm install`.
+
 ## Features ✨
 
 ### 1. **To-Do List** ✅
@@ -56,9 +58,8 @@ A gamified productivity app built with Electron, React, TypeScript, and SQLite. 
 - **Desktop**: Electron 28
 - **Build Tool**: Vite
 - **State Management**: Zustand
-- **Database**: SQLite with Drizzle ORM
+- **Database**: SQLite (via sql.js - WebAssembly, no build tools required!)
 - **Styling**: Tailwind CSS
-- **Charts**: Recharts
 - **Icons**: Lucide React
 - **Date Utilities**: date-fns
 
@@ -113,6 +114,7 @@ src/
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
+- **No build tools required!** Works on Windows, Mac, and Linux without Visual Studio or Xcode
 
 ### Installation
 
@@ -144,10 +146,12 @@ src/
 ### First Run
 
 When you first launch the app, it will:
-1. Create a SQLite database (`productivity.db`)
+1. Create a SQLite database in browser localStorage
 2. Initialize all tables (todos, activities, goals, user_stats)
 3. Seed with example data so you can see everything in action
 4. Set a default daily goal of 2 hours (120 minutes)
+
+**Note**: The database is stored in your browser's localStorage, so it persists between sessions!
 
 ## Usage Guide 📖
 
@@ -293,21 +297,24 @@ Edit `src/modules/calendar/calculations.ts` in the `getDayStatus` function to ch
 4. **Debugging**
    - Electron DevTools are open by default in dev mode
    - Use `console.log()` to debug
-   - Check `productivity.db` with a SQLite viewer to inspect data
+   - Database is in browser localStorage - check Application tab in DevTools
 
 ## Troubleshooting 🔧
 
 ### Database Issues
-- Delete `productivity.db` and restart the app to reset
-- Check console for database errors
+- Clear browser localStorage to reset: Open DevTools → Application → Local Storage → Clear
+- Or use: `localStorage.removeItem('productivityDb')` in console
+- Refresh the app to re-seed data
 
 ### Build Issues
 - Run `npm install` again
 - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
+- **Windows users**: No Visual Studio required! sql.js works without native compilation
 
 ### Electron Not Starting
-- Make sure ports 5173 is available
+- Make sure port 5173 is available
 - Check for error messages in the terminal
+- Try: `npm run dev` first to test Vite alone
 
 ## Future Enhancement Ideas 💭
 
