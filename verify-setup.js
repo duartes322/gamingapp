@@ -5,8 +5,13 @@
  * Run this after npm install to verify everything is ready
  */
 
-const fs = require('fs');
-const path = require('path');
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 console.log('🔍 Verifying Productivity Quest setup...\n');
 
@@ -22,7 +27,7 @@ if (majorVersion < 18) {
 }
 
 // Check if node_modules exists
-if (fs.existsSync('node_modules')) {
+if (existsSync('node_modules')) {
   console.log('✓ node_modules directory exists');
 } else {
   console.log('✗ node_modules not found - run npm install');
@@ -42,7 +47,7 @@ const criticalFiles = [
 
 console.log('\n📁 Checking critical files:');
 criticalFiles.forEach(file => {
-  if (fs.existsSync(file)) {
+  if (existsSync(file)) {
     console.log(`  ✓ ${file}`);
   } else {
     console.log(`  ✗ ${file} missing`);
@@ -62,8 +67,8 @@ const modules = [
 
 console.log('\n🧩 Checking modules:');
 modules.forEach(module => {
-  const modulePath = path.join('src', 'modules', module);
-  if (fs.existsSync(modulePath)) {
+  const modulePath = join('src', 'modules', module);
+  if (existsSync(modulePath)) {
     console.log(`  ✓ ${module}`);
   } else {
     console.log(`  ✗ ${module} missing`);
@@ -74,7 +79,7 @@ modules.forEach(module => {
 // Check dependencies
 console.log('\n📦 Checking key dependencies:');
 try {
-  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
   const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
   
   const keyDeps = [
