@@ -43,23 +43,24 @@ npm run build
 
 ```
 /workspace
-├── electron/                 # Electron main process
-│   ├── main.ts              # Main process entry point
-│   └── preload.ts           # Preload script
+├── electron/                    # Electron main process
+│   ├── main.ts                 # Main process + IPC handlers
+│   ├── database.ts             # Database operations (main process only)
+│   └── preload.ts              # Context bridge for IPC
 ├── src/
 │   ├── modules/
-│   │   └── todos/           # Todo module
-│   │       ├── types.ts     # TypeScript types
-│   │       ├── store.ts     # Zustand store
-│   │       ├── TodoList.tsx # Main todo list component
-│   │       ├── TodoItem.tsx # Individual todo item
+│   │   └── todos/              # Todo module
+│   │       ├── types.ts        # TypeScript types
+│   │       ├── store.ts        # Zustand store
+│   │       ├── TodoList.tsx    # Main todo list component
+│   │       ├── TodoItem.tsx    # Individual todo item
 │   │       └── AddTodoForm.tsx # Add todo form
 │   ├── services/
-│   │   ├── schema.ts        # Drizzle ORM schema
-│   │   └── database.ts      # Database operations
-│   ├── App.tsx              # Root React component
-│   ├── main.tsx             # React entry point
-│   └── index.css            # Tailwind CSS imports
+│   │   └── database-api.ts     # IPC wrapper for renderer
+│   ├── global.d.ts             # TypeScript global types
+│   ├── App.tsx                 # Root React component
+│   ├── main.tsx                # React entry point
+│   └── index.css               # Tailwind CSS imports
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
@@ -110,10 +111,20 @@ The app uses SQLite for data persistence. The database file (`database.db`) is c
 
 ## Development Notes
 
-- The app uses the modular architecture pattern - each feature lives in `src/modules/[feature]/`
+- **Process Separation**: Database operations run in the main process, React UI in renderer process
+- **IPC Communication**: All database calls use Electron IPC (Inter-Process Communication)
+- **Type Safety**: TypeScript types are shared between main and renderer via `global.d.ts`
+- **Modular Architecture**: Each feature lives in `src/modules/[feature]/`
 - Each module contains its own store, types, and components
-- Database operations are abstracted in `src/services/database.ts`
 - All future features should follow this same pattern
+
+### Adding New Database Operations
+
+1. Add the operation to `electron/database.ts`
+2. Add IPC handler in `electron/main.ts`
+3. Expose method in `electron/preload.ts`
+4. Add TypeScript type to `src/global.d.ts`
+5. Use via IPC in renderer components
 
 ## Troubleshooting
 

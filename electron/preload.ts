@@ -1,6 +1,16 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electron', {
-  // Add any Electron APIs you want to expose to the renderer here
-  platform: process.platform,
+export interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  // Database operations
+  getAllTodos: (): Promise<Todo[]> => ipcRenderer.invoke('db:getAllTodos'),
+  addTodo: (text: string): Promise<Todo> => ipcRenderer.invoke('db:addTodo', text),
+  toggleTodo: (id: number): Promise<Todo | null> => ipcRenderer.invoke('db:toggleTodo', id),
+  deleteTodo: (id: number): Promise<void> => ipcRenderer.invoke('db:deleteTodo', id),
 });

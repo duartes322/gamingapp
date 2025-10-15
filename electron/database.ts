@@ -1,11 +1,24 @@
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { todos, type Todo } from './schema';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { eq } from 'drizzle-orm';
+import path from 'path';
+import { app } from 'electron';
+
+// Schema definition
+export const todos = sqliteTable('todos', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  text: text('text').notNull(),
+  completed: integer('completed', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+export type Todo = typeof todos.$inferSelect;
 
 // Initialize database
-// In production, you may want to use app.getPath('userData')
-const dbPath = './database.db';
+const dbPath = app.isPackaged 
+  ? path.join(process.resourcesPath, 'database.db')
+  : path.join(app.getPath('userData'), 'database.db');
 
 const sqlite = new Database(dbPath);
 const db = drizzle(sqlite);
@@ -20,23 +33,20 @@ sqlite.exec(`
   );
 `);
 
-// Database operations
-export const database = {
-  // Get all todos
+// Database operations (to be called from main process only)
+export const databaseOperations = {
   getAllTodos: (): Todo[] => {
     return db.select().from(todos).all();
   },
 
-  // Add a new todo
   addTodo: (text: string): Todo => {
     const result = db.insert(todos).values({ text }).returning().get();
     return result;
   },
 
-  // Toggle todo completion
-  toggleTodo: (id: number): Todo | undefined => {
+  toggleTodo: (id: number): Todo | null => {
     const todo = db.select().from(todos).where(eq(todos.id, id)).get();
-    if (!todo) return undefined;
+    if (!todo) return null;
 
     const result = db
       .update(todos)
@@ -47,7 +57,6 @@ export const database = {
     return result;
   },
 
-  // Delete a todo
   deleteTodo: (id: number): void => {
     db.delete(todos).where(eq(todos.id, id)).run();
   },

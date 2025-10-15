@@ -34,18 +34,23 @@ npm run electron:dev
 ## 📁 Project Structure
 
 ```
-src/
+electron/                       # Main process (Node.js)
+├── main.ts                    # Electron app + IPC handlers
+├── database.ts                # SQLite database operations
+└── preload.ts                 # IPC bridge (secure)
+
+src/                           # Renderer process (React)
 ├── modules/
-│   └── todos/              # Todo feature module
-│       ├── types.ts        # TypeScript interfaces
-│       ├── store.ts        # Zustand store
-│       ├── TodoList.tsx    # Main list component
-│       ├── TodoItem.tsx    # Individual item
-│       └── AddTodoForm.tsx # Add form component
+│   └── todos/                 # Todo feature module
+│       ├── types.ts           # TypeScript interfaces
+│       ├── store.ts           # Zustand store
+│       ├── TodoList.tsx       # Main list component
+│       ├── TodoItem.tsx       # Individual item
+│       └── AddTodoForm.tsx    # Add form component
 ├── services/
-│   ├── schema.ts           # Drizzle schema definitions
-│   └── database.ts         # Database operations
-└── App.tsx                 # Root component
+│   └── database-api.ts        # IPC wrapper for renderer
+├── global.d.ts                # Global TypeScript types
+└── App.tsx                    # Root component
 ```
 
 ## 📋 Future Features (Planned)
@@ -82,10 +87,26 @@ See [SETUP.md](./SETUP.md) for detailed setup instructions and troubleshooting.
 
 ## 🏛️ Architecture
 
-This app follows a modular architecture where each feature is self-contained:
+This app uses Electron's multi-process architecture for security and performance:
+
+**Main Process (Node.js)**
+- Handles all database operations with SQLite + Drizzle ORM
+- Manages IPC (Inter-Process Communication) handlers
+- No UI rendering, just business logic
+
+**Renderer Process (Chromium)**
+- React app with Zustand state management
+- Communicates with main process via IPC
+- Sandboxed for security (no direct Node.js access)
+
+**Preload Script**
+- Secure bridge between main and renderer
+- Exposes only specific IPC methods via `contextBridge`
+
+**Modular Feature Organization**
+- Each feature is self-contained in `src/modules/[feature]/`
 - Each module has its own `store.ts`, `types.ts`, and React components
-- Database operations are centralized in `src/services/database.ts`
-- All future features will follow this same pattern for consistency
+- All future features follow this pattern for consistency
 
 ## 📄 License
 

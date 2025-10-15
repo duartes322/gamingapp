@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { database } from '@/services/database';
+import { database } from '@/services/database-api';
 import type { Todo } from './types';
 
 interface TodosState {
@@ -19,21 +19,22 @@ export const useTodosStore = create<TodosState>((set) => ({
   isLoading: false,
   error: null,
 
-  loadTodos: () => {
+  loadTodos: async () => {
     try {
-      const todos = database.getAllTodos();
-      set({ todos, error: null });
+      set({ isLoading: true });
+      const todos = await database.getAllTodos();
+      set({ todos, error: null, isLoading: false });
     } catch (error) {
-      set({ error: 'Failed to load todos' });
+      set({ error: 'Failed to load todos', isLoading: false });
       console.error('Error loading todos:', error);
     }
   },
 
-  addTodo: (text: string) => {
+  addTodo: async (text: string) => {
     if (!text.trim()) return;
     
     try {
-      const newTodo = database.addTodo(text);
+      const newTodo = await database.addTodo(text);
       set((state) => ({
         todos: [...state.todos, newTodo],
         error: null,
@@ -44,9 +45,9 @@ export const useTodosStore = create<TodosState>((set) => ({
     }
   },
 
-  toggleTodo: (id: number) => {
+  toggleTodo: async (id: number) => {
     try {
-      const updatedTodo = database.toggleTodo(id);
+      const updatedTodo = await database.toggleTodo(id);
       if (updatedTodo) {
         set((state) => ({
           todos: state.todos.map((todo) =>
@@ -61,9 +62,9 @@ export const useTodosStore = create<TodosState>((set) => ({
     }
   },
 
-  deleteTodo: (id: number) => {
+  deleteTodo: async (id: number) => {
     try {
-      database.deleteTodo(id);
+      await database.deleteTodo(id);
       set((state) => ({
         todos: state.todos.filter((todo) => todo.id !== id),
         error: null,

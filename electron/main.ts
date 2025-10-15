@@ -1,11 +1,31 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { databaseOperations } from './database';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
+
+// Set up IPC handlers for database operations
+function setupIpcHandlers() {
+  ipcMain.handle('db:getAllTodos', () => {
+    return databaseOperations.getAllTodos();
+  });
+
+  ipcMain.handle('db:addTodo', (_event, text: string) => {
+    return databaseOperations.addTodo(text);
+  });
+
+  ipcMain.handle('db:toggleTodo', (_event, id: number) => {
+    return databaseOperations.toggleTodo(id);
+  });
+
+  ipcMain.handle('db:deleteTodo', (_event, id: number) => {
+    databaseOperations.deleteTodo(id);
+  });
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -36,7 +56,10 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  setupIpcHandlers();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
