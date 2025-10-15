@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "preview": "vite preview",
-    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:dev": "vite",
     "electron:build": "tsc && vite build && electron-builder",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",

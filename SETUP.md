@@ -26,8 +26,10 @@ npm run electron:dev
 
 This will:
 - Start Vite dev server on http://localhost:5173
-- Launch Electron window with hot-reload enabled
+- Automatically launch Electron window with hot-reload enabled
 - Open DevTools automatically
+
+**Note:** The vite-plugin-electron handles starting both the Vite dev server and Electron automatically. Just run the one command and wait a few seconds for the app to launch.
 
 ### Production Build
 
@@ -117,10 +119,21 @@ The app uses SQLite for data persistence. The database file (`database.db`) is c
 
 If you encounter issues:
 
-1. **Database errors**: Delete `database.db` and restart the app
-2. **Module not found**: Run `npm install` again
-3. **Vite errors**: Clear node_modules and reinstall: `rm -rf node_modules && npm install`
-4. **Electron won't start**: Make sure port 5173 is not in use
+1. **White screen / ERR_FILE_NOT_FOUND**: 
+   - Make sure you're running `npm run electron:dev` (not just `electron .`)
+   - Wait a few seconds for the Vite dev server to fully start before Electron launches
+   - Check that port 5173 is not in use by another application
+
+2. **Database errors**: Delete `database.db` and restart the app
+
+3. **Module not found**: Run `npm install` again
+
+4. **Vite errors**: Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+
+5. **Electron won't start**: 
+   - Make sure port 5173 is not in use
+   - Try stopping the process and running again
+   - On Windows, close any existing Electron processes in Task Manager
 
 ## License
 
